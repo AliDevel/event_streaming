@@ -1,0 +1,49 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-12-28 21:23:13.202538",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "producer",
+  "consumer"
+ ],
+ "fields": [
+  {
+   "fieldname": "producer",
+   "fieldtype": "Data",
+   "label": "Producer"
+  },
+  {
+   "fieldname": "consumer",
+   "fieldtype": "Data",
+   "label": "Consumer"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-01-01 21:18:17.243177",
+ "modified_by": "Administrator",
+ "module": "Event Streaming",
+ "name": "Syncronize",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
