@@ -56,7 +56,7 @@ def pull_producer_data(update, event_producer, in_retry=False):
         frappe.log_error(frappe.get_traceback(), frappe.parse_json(update))
 
     event_producer ='Hi'# event_producer
-    frappe.log_error(frappe.get_traceback(), frappe.parse_json(event_producer))
+    frappe.log_error(frappe.get_traceback(), 'Hi')
 
     try:
         if update.update_type == "Create":
