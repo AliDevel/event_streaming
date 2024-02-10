@@ -81,8 +81,6 @@ def pull_producer_data(update, event_producer, in_retry=False):
 
 
 
-
-  
 @frappe.whitelist()
 def send_to_node(event_producer, event_consumer):
     """Pull all updates after the last update timestamp from the event producer site.
@@ -107,7 +105,7 @@ def send_to_node(event_producer, event_consumer):
     for update in updates:
         update.use_same_name = naming_config.get(update.ref_doctype)
         mapping = mapping_config.get(update.ref_doctype)
-		update.creation = update.creation.isoformat()
+        update.creation = update.creation.isoformat()
 
         if mapping:
             update.mapping = mapping
@@ -115,21 +113,20 @@ def send_to_node(event_producer, event_consumer):
         if not update.update_type == "Delete":
             update.data = update.data
             frappe.msgprint(str(update.data))  # Fixed indentation
-        # Construct a list of JSON-formatted strings
+            # Construct a list of JSON-formatted strings
 
-        x = consumer_site.post_request(
-            {
-                "cmd": "event_streaming.event_streaming.doctype.event_producer.event_producer_send.pull_producer_data",
-                
+            x = consumer_site.post_request(
+                {
+                    "cmd": "event_streaming.event_streaming.doctype.event_producer.event_producer_send.pull_producer_data",
                     "update": frappe.parse_json(update),
                     "event_producer": producer_site,
-                
-            }
-        )
+                }
+            )
 
-        # event_consumer_doc.set_last_update(update.creation)
+            # event_consumer_doc.set_last_update(update.creation)
 
     return last_update
+
 
 
 
