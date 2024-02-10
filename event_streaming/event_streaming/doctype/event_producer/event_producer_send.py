@@ -173,7 +173,8 @@ def set_insert(update,  event_producer):
 	
 	#if update.use_same_name:
 	doc.insert(set_name=update.docname, set_child_names=False)
-	
+	frappe.db.commit()
+
 	#else:
 		# if event consumer is not saving documents with the same name as the producer
 		# store the remote docname in a custom field for future updates
