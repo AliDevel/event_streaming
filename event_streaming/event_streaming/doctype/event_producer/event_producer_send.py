@@ -50,23 +50,25 @@ def get_approval_status(config, ref_doctype):
 def pull_producer_data(update, event_producer, in_retry=False):
     """Sync the individual update"""
     frappe.log_error(frappe.get_traceback(), 'payment failed')
+
     if isinstance(update, str):
         update = frappe.parse_json(update)
         frappe.log_error(frappe.get_traceback(), frappe.parse_json(update))
-		event_producer = frappe.parse_json(event_producer)
-		frappe.log_error(frappe.get_traceback(), frappe.parse_json(event_producer))
 
-    
+    event_producer = frappe.parse_json(event_producer)
+    frappe.log_error(frappe.get_traceback(), frappe.parse_json(event_producer))
+
     try:
         if update.update_type == "Create":
             set_insert(update, event_producer.name)
-        if update.update_type == "Update":
-            
+        elif update.update_type == "Update":
             set_update(update)
-        if update.update_type == "Delete":
+        elif update.update_type == "Delete":
             set_delete(update)
+
         if in_retry:
             return "Synced"
+        
         log_event_sync(update, event_producer.name, "Synced")  
     except Exception:
         if in_retry:
@@ -75,8 +77,8 @@ def pull_producer_data(update, event_producer, in_retry=False):
             return "Failed"
         log_event_sync(update, event_producer.name, "Failed", frappe.get_traceback())
 
-    
-    frappe.db.commit() 
+    frappe.db.commit()
+
 
 
 
