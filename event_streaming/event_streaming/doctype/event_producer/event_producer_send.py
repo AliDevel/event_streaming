@@ -371,10 +371,10 @@ def log_event_sync(update, event_producer, sync_status, error=None):
 	doc.data = frappe.as_json(update.data)
 	doc.use_same_name = update.use_same_name
 	doc.mapping = update.mapping if update.mapping else None
-	if update.use_same_name:
-		doc.docname = update.docname
-	else:
-		doc.docname = frappe.db.get_value(update.ref_doctype, {"remote_docname": update.docname}, "name")
+	#if update.use_same_name:
+	doc.docname = update.docname
+	#else:
+	#	doc.docname = frappe.db.get_value(update.ref_doctype, {"remote_docname": update.docname}, "name")
 	if error:
 		doc.error = error
 	doc.insert()
