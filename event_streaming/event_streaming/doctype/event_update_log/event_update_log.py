@@ -38,11 +38,13 @@ def notify_consumers(doc, event):
 		)
 	if consumers   :					
 		if event == "after_insert":
+			frappe.log_error(frappe.get_traceback(), event )
 			doc.flags.event_update_log = make_event_update_log(doc, update_type="Create")
 		elif event == "on_trash":
 			make_event_update_log(doc, update_type="Delete")
 		else:
-			
+			frappe.log_error(frappe.get_traceback(), event )
+			frappe.log_error(frappe.get_traceback(), doc )
 			# on_update
 			# called after saving
 			if not doc.flags.event_update_log:  # if not already inserted
