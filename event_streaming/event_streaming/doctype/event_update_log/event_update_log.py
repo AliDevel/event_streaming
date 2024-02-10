@@ -118,11 +118,12 @@ def make_event_update_log(doc, update_type):
             "ref_doctype": doc.doctype,
             "docname": doc.name,
             "data": data,
-        }
+        },
+        limit=1,
     )	
 	frappe.log_error(frappe.get_traceback(),"Make event"+str(existing_entry))	
-
-	return frappe.get_doc(
+	if not existing_entry:
+			doc = frappe.get_doc(
 		{
 			"doctype": "Event Update Log",
 			"update_type": update_type,
@@ -131,6 +132,8 @@ def make_event_update_log(doc, update_type):
 			"data": data,
 		}
 	).insert(ignore_permissions=True)
+			frappe.db.commit()
+			return doc
 
 
 def make_maps(old_value, new_value):
