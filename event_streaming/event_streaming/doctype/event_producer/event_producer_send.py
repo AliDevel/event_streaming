@@ -86,7 +86,7 @@ def send_to_node(event_producer, event_consumer):
     """Pull all updates after the last update timestamp from the event producer site.
     In this case, it will send from the local site to the Remote Site"""
     event_producer = frappe.get_doc("Event Producer", event_producer)
-    producer_site = get_producer_site(event_producer.producer_url)
+    producer_site = event_producer.producer_url
 
     event_consumer_doc = frappe.get_doc("Event Consumer Z", event_consumer)
     consumer_site = get_consumer_site(event_consumer_doc.callback_url)

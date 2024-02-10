@@ -70,26 +70,28 @@ class EventProducer(Document):
 			self.producer_url = self.producer_url[:-1]
 
 	def create_event_consumer(self):
-		return
-		"""register event consumer on the producer site"""
-		if self.is_producer_online():
-			producer_site = FrappeClient(
-				url=self.producer_url, api_key=self.api_key, api_secret=self.get_password("api_secret")
-			)
-
-			response = producer_site.post_api(
-				"event_streaming.event_streaming.doctype.event_consumer.event_consumer.register_consumer",
-				params={"data": json.dumps(self.get_request_data())},
-			)
-			if response:
-				response = json.loads(response)
-				self.set_last_update(response["last_update"])
-			else:
-				frappe.throw(
-					_(
-						"Failed to create an Event Consumer or an Event Consumer for the current site is already registered."
-					)
+		if self.host_url != self.producer_url: 
+			"""register event consumer on the producer site"""
+			if self.is_producer_online():
+				producer_site = FrappeClient(
+					url=self.producer_url, api_key=self.api_key, api_secret=self.get_password("api_secret")
 				)
+
+				response = producer_site.post_api(
+					"event_streaming.event_streaming.doctype.event_consumer.event_consumer.register_consumer",
+					params={"data": json.dumps(self.get_request_data())},
+				)
+				if response:
+					response = json.loads(response)
+					self.set_last_update(response["last_update"])
+				else:
+					frappe.throw(
+						_(
+							"Failed to create an Event Consumer or an Event Consumer for the current site is already registered."
+						)
+					)
+			else:
+				register_consumer({"data": json.dumps(self.get_request_data())})
 
 	def set_last_update(self, last_update):
 		last_update_doc_name = frappe.db.get_value(
@@ -199,6 +201,52 @@ class EventProducer(Document):
 		frappe.throw(_("Failed to connect to the Event Producer site. Retry after some time."))
 
 
+
+@frappe.whitelist()
+def register_consumer(data):
+	"""create an event consumer document for registering a consumer"""
+	data = json.loads(data)
+	# to ensure that consumer is created only once
+	if frappe.db.exists("Event Consumer", data["event_consumer"]):
+		return None
+
+	user = data["user"]
+	if not frappe.db.exists("User", user):
+		frappe.throw(_("User {0} not found on the producer site").format(user))
+
+	if "System Manager" not in frappe.get_roles(user):
+		frappe.throw(_("Event Subscriber has to be a System Manager."))
+
+	consumer = frappe.new_doc("Event Consumer")
+	consumer.callback_url = data["event_consumer"]
+	consumer.user = data["user"]
+	consumer.api_key = data["api_key"]
+	consumer.api_secret = data["api_secret"]
+	consumer.incoming_change = True
+	consumer_doctypes = json.loads(data["consumer_doctypes"])
+
+	for entry in consumer_doctypes:
+		consumer.append(
+			"consumer_doctypes",
+			{"ref_doctype": entry.get("doctype"), "status": "Approved", "condition": entry.get("condition")},
+		)
+
+	consumer.insert()
+
+	# consumer's 'last_update' field should point to the latest update
+	# in producer's update log when subscribing
+	# so that, updates after subscribing are consumed and not the old ones.
+	last_update = str(get_last_update())
+	return json.dumps({"last_update": last_update})
+
+def get_last_update():
+	"""get the creation timestamp of last update consumed"""
+	updates = frappe.get_list(
+		"Event Update Log", "creation", ignore_permissions=True, limit=1, order_by="creation desc"
+	)
+	if updates:
+		return updates[0].creation
+	return frappe.utils.now_datetime()
 def get_producer_site(producer_url):
 	"""create a FrappeClient object for event producer site"""
 	producer_doc = frappe.get_doc("Event Producer", producer_url)

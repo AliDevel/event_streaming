@@ -13,7 +13,8 @@
   "api_secret",
   "column_break_6",
   "user",
-  "incoming_change"
+  "incoming_change",
+  "host_url"
  ],
  "fields": [
   {
@@ -67,13 +68,19 @@
    "label": "Event Producer Document Types",
    "options": "Event Producer Document Type",
    "reqd": 1
+  },
+  {
+   "fieldname": "host_url",
+   "fieldtype": "Data",
+   "label": "Host URL"
   }
  ],
  "links": [],
- "modified": "2020-10-26 13:00:15.361316",
+ "modified": "2024-02-10 16:24:26.248962",
  "modified_by": "Administrator",
  "module": "Event Streaming",
  "name": "Event Producer",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -92,5 +99,6 @@
  "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }
