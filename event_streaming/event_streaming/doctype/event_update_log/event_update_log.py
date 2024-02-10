@@ -29,13 +29,7 @@ def notify_consumers(doc, event):
 		return
 
 	consumers = check_doctype_has_consumers(doc.doctype)
-	if not consumers:
-		consumers = frappe.get_all(
-			"Event Consumer Document Type",
-			filters={"ref_doctype": doc.doctype,  "unsubscribed": 0},
-			ignore_ddl=True,
-			limit = 1
-		)
+
 	if consumers   :					
 		if event == "after_insert":
 			frappe.log_error(frappe.get_traceback(), event )
