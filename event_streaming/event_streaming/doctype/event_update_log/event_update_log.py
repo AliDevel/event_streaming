@@ -22,18 +22,27 @@ class EventUpdateLog(Document):
 
 
 def notify_consumers(doc, event):
+	
 	"""called via hooks"""
 	# make event update log for doctypes having event consumers
 	if frappe.flags.in_install or frappe.flags.in_migrate:
 		return
 
 	consumers = check_doctype_has_consumers(doc.doctype)
-	if consumers:
+	if not consumers:
+		consumers = frappe.get_all(
+			"Event Consumer Document Type",
+			filters={"ref_doctype": doc.doctype,  "unsubscribed": 0},
+			ignore_ddl=True,
+			limit = 1
+		)
+	if consumers   :					
 		if event == "after_insert":
 			doc.flags.event_update_log = make_event_update_log(doc, update_type="Create")
 		elif event == "on_trash":
 			make_event_update_log(doc, update_type="Delete")
 		else:
+			
 			# on_update
 			# called after saving
 			if not doc.flags.event_update_log:  # if not already inserted
@@ -47,12 +56,13 @@ ENABLED_DOCTYPES_CACHE_KEY = "event_streaming_enabled_doctypes"
 def check_doctype_has_consumers(doctype: str) -> bool:
 	"""Check if doctype has event consumers for event streaming"""
 	def fetch_from_db():
+		#frappe.log_error(frappe.get_traceback(), "doctype" )
 		return frappe.get_all(
 			"Event Consumer Document Type",
 			filters={"ref_doctype": doctype,  "unsubscribed": 0},
 			ignore_ddl=True,
 		)
-
+	
 	return bool(frappe.cache().hget(ENABLED_DOCTYPES_CACHE_KEY, doctype, fetch_from_db))
 
 
@@ -102,8 +112,9 @@ def make_event_update_log(doc, update_type):
 		# diff for update type, doc for create type
 		data = frappe.as_json(doc) if not doc.get("diff") else frappe.as_json(doc.diff)
 	else:
+		
 		data = None
-		existing_entry = frappe.get_all(
+	existing_entry = frappe.get_all(
         "Event Update Log",
         filters={
             "update_type": update_type,
@@ -112,8 +123,9 @@ def make_event_update_log(doc, update_type):
             "data": data,
         },
         limit=1,
-    )
-		if not existing_entry:
+    )	
+		
+	if not existing_entry:
 			return frappe.get_doc(
 		{
 			"doctype": "Event Update Log",
@@ -278,6 +290,8 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
 	
 
 	consumer = frappe.get_doc("Event Consumer", event_consumer)
+	if not consumer:
+		consumer = frappe.get_doc("Event Consumer Z", event_consumer)
 	docs = frappe.get_list(
 		doctype="Event Update Log",
 		filters={"ref_doctype": ("in", doctypes), "creation": (">", last_update)},
@@ -292,8 +306,8 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
 			# will be notified by background jobs
 			continue
 
-		if not has_consumer_access(consumer=consumer, update_log=d):
-			continue
+	#	if not has_consumer_access(consumer=consumer, update_log=d):
+	#		continue
 
 		if not is_consumer_uptodate(d, consumer):
 			to_update_history.append((d.ref_doctype, d.docname))

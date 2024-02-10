@@ -136,6 +136,7 @@ def get_last_update():
 
 @frappe.whitelist()
 def notify_event_consumers(doctype):
+	return 0
 	"""get all event consumers and set flag for notification status"""
 	event_consumers = frappe.get_all(
 		"Event Consumer Document Type", ["parent"], {"ref_doctype": doctype, "status": "Approved"}
