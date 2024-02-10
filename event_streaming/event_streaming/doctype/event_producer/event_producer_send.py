@@ -52,7 +52,9 @@ def pull_producer_data(update, event_producer, in_retry=False):
     frappe.log_error(frappe.get_traceback(), 'payment failed')
     if isinstance(update, str):
         update = frappe.parse_json(update)
-        event_producer = frappe.parse_json(event_producer)
+        frappe.log_error(frappe.get_traceback(), frappe.parse_json(update))
+		event_producer = frappe.parse_json(event_producer)
+		frappe.log_error(frappe.get_traceback(), frappe.parse_json(event_producer))
 
     
     try:
@@ -79,7 +81,6 @@ def pull_producer_data(update, event_producer, in_retry=False):
 
 
   
-
 @frappe.whitelist()
 def send_to_node(event_producer, event_consumer):
     """Pull all updates after the last update timestamp from the event producer site.
@@ -90,29 +91,29 @@ def send_to_node(event_producer, event_consumer):
     event_consumer_doc = frappe.get_doc("Event Consumer Z", event_consumer)
     consumer_site = get_consumer_site(event_consumer_doc.callback_url)
 
-    last_update = event_consumer_doc.get_last_update()
-    if last_update and 'T' in last_update:
+    last_update = '0'  # event_consumer_doc.get_last_update()
+    if 'T' in last_update:
         last_update = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%S.%f")
         last_update = last_update.strftime("%Y-%m-%d %H:%M:%S.%f")
-    frappe.msgprint(last_update)
+    frappe.msgprint(str(last_update))
 
     (doctypes, mapping_config, naming_config) = get_config(event_producer.producer_doctypes)
 
     updates = get_updates(event_consumer_doc.callback_url, last_update, doctypes)
-    frappe.msgprint(str(len(updates)))
+    frappe.msgprint(str(updates))
 
     for update in updates:
         update.use_same_name = naming_config.get(update.ref_doctype)
         mapping = mapping_config.get(update.ref_doctype)
-        update.creation = update.creation.isoformat()
+        #update.creation = ''#convert_to_serializable( update.creation)
 
         if mapping:
             update.mapping = mapping
             update = get_mapped_update(update, producer_site)
         if not update.update_type == "Delete":
             update.data = json.loads(update.data)
-        frappe.msgprint(str(update.creation))
-
+        #frappe.msgprint(str(update.creation))
+        update = []  # Fix: Correct indentation for this line
         x = consumer_site.post_api(
             "event_streaming.event_streaming.doctype.event_producer.event_producer_send.pull_producer_data",
             params={
@@ -120,13 +121,17 @@ def send_to_node(event_producer, event_consumer):
                 "event_producer": event_producer,
             },
         )
-		
-        event_consumer_doc.set_last_update(update.creation)
+
+        #event_consumer_doc.set_last_update(update.creation)
 
     return last_update
 
 
-
+def convert_to_serializable(obj):
+    if isinstance(obj, datetime):
+        return obj.strftime('%Y-%m-%d %H:%M:%S.%f')
+    else:
+        raise TypeError("Object of type {} is not serializable".format(type(obj)))
 
 				
 
@@ -260,9 +265,10 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
     docs = frappe.get_list(
         doctype="Event Update Log",
         filters={"ref_doctype": ("in", doctypes), "creation": (">", last_update)},
-        fields=["update_type", "ref_doctype", "docname", "data", "name", "creation"],
+        fields=["update_type", "ref_doctype", "docname", "data", "name"],
         order_by="creation desc",
     )
+	
     frappe.msgprint(str(len(docs)))
     result = []
     to_update_history = []
@@ -430,7 +436,7 @@ def get_unread_update_logs(consumer_name, dt, dn):
 
 	logs = frappe.get_all(
 		"Event Update Log",
-		fields=["update_type", "ref_doctype", "docname", "data", "name", "creation"],
+		fields=["update_type", "ref_doctype", "docname", "data", "name"],
 		filters={"ref_doctype": dt, "docname": dn, "name": ["not in", already_consumed]},
 		order_by="creation",
 	)
