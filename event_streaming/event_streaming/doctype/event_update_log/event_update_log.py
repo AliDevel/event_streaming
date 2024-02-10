@@ -319,8 +319,8 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
 		else:
 			result.append(d)
 
-	for d in result:
-		mark_consumer_read(update_log_name=d.name, consumer_name=consumer.name)
+	#for d in result:
+	#	mark_consumer_read(update_log_name=d.name, consumer_name=consumer.name)
 
 	result.reverse()
 	return result
