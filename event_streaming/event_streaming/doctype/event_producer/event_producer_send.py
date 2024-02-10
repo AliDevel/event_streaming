@@ -56,7 +56,7 @@ def pull_producer_data(update, event_producer, in_retry=False):
         frappe.log_error(frappe.get_traceback(), frappe.parse_json(update))
 
     event_producer = event_producer# event_producer
-    frappe.log_error(frappe.get_traceback(), 'Hi')
+   ## frappe.log_error(frappe.get_traceback(), 'Hi')
 
     try:
         if update.update_type == "Create":
@@ -127,10 +127,220 @@ def send_to_node(event_producer, event_consumer):
 
     return last_update
 
+@frappe.whitelist()
+def create():
+	doc = {
+ "__unsaved": 1,
+ "additional_discount_percentage": 0.0,
+ "address_display": "Nur bazar t\u00f6weregi<br>Da\u015foguz<br>\nTurkmenistan<br>\n",
+ "advances": [],
+ "against_income_account": "\u041f\u0440\u043e\u0434\u0430\u0436\u0438 - C",
+ "allocate_advances_automatically": 0,
+ "amount_eligible_for_commission": 0.0,
+ "apply_discount_on": "Grand Total",
+ "base_change_amount": 0.0,
+ "base_discount_amount": 0.0,
+ "base_grand_total": 0.0,
+ "base_in_words": "TMM Zero only.",
+ "base_net_total": 0.0,
+ "base_paid_amount": 0.0,
+ "base_rounded_total": 0.0,
+ "base_rounding_adjustment": 0.0,
+ "base_total": 0.0,
+ "base_total_taxes_and_charges": 0.0,
+ "base_write_off_amount": 0.0,
+ "change_amount": 0.0,
+ "commission_rate": 0.0,
+ "company": "5Dogan",
+ "contact_display": "Abadan market",
+ "contact_email": "",
+ "contact_mobile": "8.65.03.33.88.",
+ "contact_person": "Abadan markett-Abadan markett",
+ "conversion_rate": 1.0,
+ "creation": "2024-02-11 00:06:49.448007",
+ "currency": "TMM",
+ "customer": "Abadan market",
+ "customer_address": "nur bazar-\u0412\u044b\u0441\u0442\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u0441\u0447\u0435\u0442\u043e\u0432",
+ "customer_group": "\u041a\u043e\u043c\u043c\u0435\u0440\u0447\u0435\u0441\u043a\u0438\u0439 \u0441\u0435\u043a\u0442\u043e\u0440",
+ "customer_name": "Abadan market",
+ "debit_to": "\u0414\u0435\u0431\u0435\u0442\u043e\u0440\u044b - C",
+ "disable_rounded_total": 1,
+ "discount_amount": 0.0,
+ "docstatus": 0,
+ "doctype": "Sales Invoice",
+ "dont_create_loyalty_points": 0,
+ "due_date": "2024-02-18",
+ "grand_total": 0.0,
+ "group_same_items": 0,
+ "idx": 0,
+ "ignore_default_payment_terms_template": 0,
+ "ignore_pricing_rule": 0,
+ "in_words": "TMM Zero only.",
+ "is_cash_or_non_trade_discount": 0,
+ "is_consolidated": 0,
+ "is_debit_note": 0,
+ "is_discounted": 0,
+ "is_internal_customer": 0,
+ "is_opening": "No",
+ "is_pos": 0,
+ "is_return": 0,
+ "items": [
+  {
+   "__unsaved": 1,
+   "actual_batch_qty": 0.0,
+   "actual_qty": 22.11,
+   "allow_zero_valuation_rate": 0,
+   "amount": 0.0,
+   "barcode": "000001",
+   "base_amount": 0.0,
+   "base_net_amount": 0.0,
+   "base_net_rate": 0.0,
+   "base_price_list_rate": 0.0,
+   "base_rate": 0.0,
+   "base_rate_with_margin": 0.0,
+   "conversion_factor": 1.0,
+   "cost_center": "\u041e\u0441\u043d\u043e\u0432\u043d\u044b\u0435 - C",
+   "creation": "2024-02-11 00:06:49.448007",
+   "delivered_by_supplier": 0,
+   "delivered_qty": 0.0,
+   "description": "Koke pay taze ay pechine",
+   "discount_account": "\u041c\u0430\u0440\u043a\u0435\u0442\u0438\u043d\u0433\u043e\u0432\u044b\u0435 \u0440\u0430\u0441\u0445\u043e\u0434\u044b - C",
+   "discount_amount": 0.0,
+   "discount_percentage": 0.0,
+   "docstatus": 0,
+   "doctype": "Sales Invoice Item",
+   "enable_deferred_revenue": 0,
+   "expense_account": "\u0421\u0435\u0431\u0435\u0441\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u044c \u043f\u0440\u043e\u0434\u0430\u043d\u043d\u044b\u0445 \u043f\u0440\u043e\u0434\u0443\u043a\u0442\u043e\u0432 - C",
+   "grant_commission": 1,
+   "has_item_scanned": 0,
+   "idx": 1,
+   "image": "",
+   "income_account": "\u041f\u0440\u043e\u0434\u0430\u0436\u0438 - C",
+   "incoming_rate": 38.0,
+   "is_fixed_asset": 0,
+   "is_free_item": 0,
+   "item_code": "000001",
+   "item_group": "\u0420\u0430\u0437\u0432\u0435\u0441\u043d\u044b\u0435 \u0442\u043e\u0432\u0430\u0440\u044b",
+   "item_name": "Koke pay taze ay pechine",
+   "item_tax_rate": "{}",
+   "margin_rate_or_amount": 0.0,
+   "margin_type": "",
+   "modified": "2024-02-11 00:06:49.448007",
+   "modified_by": "Administrator",
+   "name": "ba0d9b7dd2",
+   "net_amount": 0.0,
+   "net_rate": 0.0,
+   "owner": "Administrator",
+   "page_break": 0,
+   "parent": "ss000000000000001",
+   "parentfield": "items",
+   "parenttype": "Sales Invoice",
+   "posa_is_offer": 0,
+   "posa_offer_applied": 0,
+   "price_list_rate": 0.0,
+   "pricing_rules": "",
+   "qty": 1.0,
+   "rate": 0.0,
+   "rate_with_margin": 0.0,
+   "stock_qty": 1.0,
+   "stock_uom": "\u043a\u0433",
+   "stock_uom_rate": 0.0,
+   "total_weight": 0.0,
+   "uom": "\u043a\u0433",
+   "warehouse": "\u041c\u0430\u0433\u0430\u0437\u0438\u043d\u044b - C",
+   "weight_per_unit": 0.0
+  }
+ ],
+ "language": "ru",
+ "letter_head": "Default",
+ "loyalty_amount": 0.0,
+ "loyalty_points": 0,
+ "modified": "2024-02-11 00:06:49.448007",
+ "modified_by": "Administrator",
+ "name": "ss000000000000001",
+ "naming_series": "ACC-SINV-.YYYY.-",
+ "net_total": 0.0,
+ "only_include_allocated_payments": 0,
+ "outstanding_amount": 0.0,
+ "owner": "Administrator",
+ "packed_items": [],
+ "paid_amount": 0.0,
+ "party_account_currency": "TMM",
+ "payment_schedule": [
+  {
+   "__unsaved": 1,
+   "base_payment_amount": 0.0,
+   "creation": "2024-02-11 00:06:49.448007",
+   "description": "7 Gundan son Polny tolag atmali",
+   "discount": 0.0,
+   "discount_date": "2024-02-11",
+   "discount_type": "Percentage",
+   "discounted_amount": 0.0,
+   "docstatus": 0,
+   "doctype": "Payment Schedule",
+   "due_date": "2024-02-18",
+   "idx": 1,
+   "invoice_portion": 100.0,
+   "modified": "2024-02-11 00:06:49.448007",
+   "modified_by": "Administrator",
+   "name": "9e0d44563c",
+   "outstanding": 0.0,
+   "owner": "Administrator",
+   "paid_amount": 0.0,
+   "parent": "ss000000000000001",
+   "parentfield": "payment_schedule",
+   "parenttype": "Sales Invoice",
+   "payment_amount": 0.0,
+   "payment_term": "7Gun"
+  }
+ ],
+ "payment_terms_template": "7 Gun",
+ "payments": [],
+ "plc_conversion_rate": 1.0,
+ "po_no": "",
+ "posa_coupons": [],
+ "posa_delivery_charges_rate": 0.0,
+ "posa_is_printed": 0,
+ "posa_offers": [],
+ "posting_date": "2024-02-11",
+ "posting_time": "00:06:49.866949",
+ "price_list_currency": "TMM",
+ "pricing_rules": [],
+ "redeem_loyalty_points": 0,
+ "remarks": "No Remarks",
+ "repost_required": 0,
+ "rounded_total": 0.0,
+ "rounding_adjustment": 0.0,
+ "sales_team": [],
+ "selling_price_list": "Pra\u00fds.Zakaz",
+ "set_posting_time": 0,
+ "status": "Draft",
+ "tax_category": "",
+ "tax_id": "",
+ "taxes": [],
+ "territory": "Turkmenistan",
+ "timesheets": [],
+ "title": "Abadan market",
+ "total": 0.0,
+ "total_advance": 0.0,
+ "total_billing_amount": 0.0,
+ "total_billing_hours": 0.0,
+ "total_commission": 0.0,
+ "total_net_weight": 0.0,
+ "total_qty": 1.0,
+ "total_taxes_and_charges": 0.0,
+ "update_billed_amount_in_delivery_note": 1,
+ "update_billed_amount_in_sales_order": 0,
+ "update_stock": 0,
+ "use_company_roundoff_cost_center": 0,
+ "workflow_state": "\u0417\u0430\u043a\u0430\u0437 \u043f\u043e\u043b\u0443\u0447\u0435\u043d",
+ "write_off_amount": 0.0,
+ "write_off_outstanding_amount_automatically": 0
+}
+	doc1 = frappe.get_doc(doc)
+	doc1.insert()
 
-
-
-
+@frappe.whitelist()
 def convert_to_serializable(obj):
     if isinstance(obj, datetime):
         return obj.strftime('%Y-%m-%d %H:%M:%S.%f')
@@ -166,10 +376,10 @@ def get_config(event_config):
 def set_insert(update,  event_producer):
 	"""Sync insert type update"""
 
-	frappe.log_error(frappe.get_traceback(), 'insert1')	
-	frappe.log_error(frappe.get_traceback(), str(update.data))
+	#frappe.log_error(frappe.get_traceback(), 'insert1')	
+	#frappe.log_error(frappe.get_traceback(), str(update.data))
 	doc = frappe.get_doc(update.data)
-	frappe.log_error(frappe.get_traceback(), 'insert2')	
+	#frappe.log_error(frappe.get_traceback(), 'insert2')	
 	
 	#if update.use_same_name:
 	doc.insert(set_name=update.docname, set_child_names=False)

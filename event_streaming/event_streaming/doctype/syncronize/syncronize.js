@@ -19,13 +19,10 @@ frappe.ui.form.on("Syncronize", {
 					},
 				});
 			});
-			frm.add_custom_button(__("Send"), function () {
+			frm.add_custom_button(__("Send1"), function () {
 				frappe.call({
 					method: "event_streaming.event_streaming.doctype.event_producer.event_producer_send.send_to_node",
-					args: {
-						event_producer: frm.doc.producer,
-						event_consumer: frm.doc.consumer,
-					},
+					
 					callback: function (r) {
 						if (r.message) {
 							frappe.msgprint(r.message);
