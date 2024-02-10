@@ -55,7 +55,7 @@ def pull_producer_data(update, event_producer, in_retry=False):
         update = frappe.parse_json(update)
         frappe.log_error(frappe.get_traceback(), frappe.parse_json(update))
 
-    event_producer = frappe.parse_json(event_producer)
+    event_producer = event_producer
     frappe.log_error(frappe.get_traceback(), frappe.parse_json(event_producer))
 
     try:
@@ -115,7 +115,7 @@ def send_to_node(event_producer, event_consumer):
         if not update.update_type == "Delete":
             update.data = json.loads(update.data)
         #frappe.msgprint(str(update.creation))
-        update = []  # Fix: Correct indentation for this line
+        update = [{'1':'2'}]  # Fix: Correct indentation for this line
         x = consumer_site.post_api(
             "event_streaming.event_streaming.doctype.event_producer.event_producer_send.pull_producer_data",
             params={
