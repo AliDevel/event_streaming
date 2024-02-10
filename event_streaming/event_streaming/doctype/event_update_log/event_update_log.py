@@ -103,7 +103,7 @@ def get_update(old, new, for_child=False):
 
 
 def make_event_update_log(doc, update_type):
-	frappe.log_error(frappe.get_traceback(),"Make event"+update_type)
+	#frappe.log_error(frappe.get_traceback(),"Make event"+update_type)
 	"""Save update info for doctypes that have event consumers"""
 	if update_type != "Delete":
 		# diff for update type, doc for create type
@@ -121,7 +121,7 @@ def make_event_update_log(doc, update_type):
         },
         limit=1,
     )	
-		
+	frappe.log_error(frappe.get_traceback(),"Make event"+existing_entry)	
 	if not existing_entry:
 			return frappe.get_doc(
 		{
