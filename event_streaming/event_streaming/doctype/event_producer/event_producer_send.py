@@ -69,13 +69,13 @@ def pull_producer_data(update, event_producer, in_retry=False):
         if in_retry:
             return "Synced"
         
-        log_event_sync(update, event_producer, "Synced")  
+      #  log_event_sync(update, event_producer, "Synced")  
     except Exception:
         if in_retry:
             if frappe.flags.in_test:
                 print(frappe.get_traceback())
             return "Failed"
-        log_event_sync(update, event_producer, "Failed", frappe.get_traceback())
+       # log_event_sync(update, event_producer, "Failed", frappe.get_traceback())
 
     frappe.db.commit()
 
@@ -107,26 +107,30 @@ def send_to_node(event_producer, event_consumer):
     for update in updates:
         update.use_same_name = naming_config.get(update.ref_doctype)
         mapping = mapping_config.get(update.ref_doctype)
-        #update.creation = ''#convert_to_serializable( update.creation)
 
         if mapping:
             update.mapping = mapping
             update = get_mapped_update(update, producer_site)
         if not update.update_type == "Delete":
-            update.data = json.loads(update.data)
-        #frappe.msgprint(str(update.creation))
-        update = [{'1':'2'}]  # Fix: Correct indentation for this line
-        x = consumer_site.post_api(
-            "event_streaming.event_streaming.doctype.event_producer.event_producer_send.pull_producer_data",
-            params={
-                "update": frappe.as_json(update),
-                "event_producer": producer_site,
-            },
+            update.data = update.data
+            frappe.msgprint(str(update.data))  # Fixed indentation
+        # Construct a list of JSON-formatted strings
+
+        x = consumer_site.post_request(
+            {
+                "cmd": "event_streaming.event_streaming.doctype.event_producer.event_producer_send.pull_producer_data",
+                
+                    "update": frappe.parse_json(update),
+                    "event_producer": producer_site,
+                
+            }
         )
 
-        #event_consumer_doc.set_last_update(update.creation)
+        # event_consumer_doc.set_last_update(update.creation)
 
     return last_update
+
+
 
 
 def convert_to_serializable(obj):
