@@ -166,9 +166,9 @@ def get_config(event_config):
 def set_insert(update,  event_producer):
 	"""Sync insert type update"""
 
-
+	frappe.log_error(frappe.get_traceback(), 'insert1')	
 	doc = frappe.get_doc(update.data)
-	frappe.log_error(frappe.get_traceback(), 'insert')	
+	frappe.log_error(frappe.get_traceback(), 'insert2')	
 	#if update.use_same_name:
 	doc.insert(set_name=update.docname, set_child_names=False)
 	
