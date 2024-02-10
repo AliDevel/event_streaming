@@ -49,7 +49,7 @@ def get_approval_status(config, ref_doctype):
 @frappe.whitelist()
 def pull_producer_data(update, event_producer, in_retry=False):
     """Sync the individual update"""
-    frappe.log_error(frappe.get_traceback(), 'payment failed')
+    #frappe.log_error(frappe.get_traceback(), 'payment failed')
 
     if isinstance(update, str):
         update = frappe.parse_json(update)
