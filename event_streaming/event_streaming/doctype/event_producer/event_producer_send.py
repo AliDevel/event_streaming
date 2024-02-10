@@ -69,13 +69,13 @@ def pull_producer_data(update, event_producer, in_retry=False):
         if in_retry:
             return "Synced"
         
-      #  log_event_sync(update, event_producer, "Synced")  
+        log_event_sync(update, event_producer, "Synced")  
     except Exception:
         if in_retry:
             if frappe.flags.in_test:
                 print(frappe.get_traceback())
             return "Failed"
-       # log_event_sync(update, event_producer, "Failed", frappe.get_traceback())
+        log_event_sync(update, event_producer, "Failed", frappe.get_traceback())
 
     frappe.db.commit()
 
@@ -107,6 +107,7 @@ def send_to_node(event_producer, event_consumer):
     for update in updates:
         update.use_same_name = naming_config.get(update.ref_doctype)
         mapping = mapping_config.get(update.ref_doctype)
+		update.creation = update.creation.isoformat()
 
         if mapping:
             update.mapping = mapping
@@ -271,7 +272,7 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
     docs = frappe.get_list(
         doctype="Event Update Log",
         filters={"ref_doctype": ("in", doctypes), "creation": (">", last_update)},
-        fields=["update_type", "ref_doctype", "docname", "data", "name"],
+        fields=["update_type", "ref_doctype", "docname", "data", "name","creation"],
         order_by="creation desc",
     )
 	
@@ -442,7 +443,7 @@ def get_unread_update_logs(consumer_name, dt, dn):
 
 	logs = frappe.get_all(
 		"Event Update Log",
-		fields=["update_type", "ref_doctype", "docname", "data", "name"],
+		fields=["update_type", "ref_doctype", "docname", "data", "name",'creation'],
 		filters={"ref_doctype": dt, "docname": dn, "name": ["not in", already_consumed]},
 		order_by="creation",
 	)
