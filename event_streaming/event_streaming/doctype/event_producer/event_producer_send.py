@@ -55,12 +55,12 @@ def pull_producer_data(update, event_producer, in_retry=False):
         update = frappe.parse_json(update)
         frappe.log_error(frappe.get_traceback(), frappe.parse_json(update))
 
-    event_producer ='Hi'# event_producer
+    event_producer = event_producer# event_producer
     frappe.log_error(frappe.get_traceback(), 'Hi')
 
     try:
         if update.update_type == "Create":
-            set_insert(update, event_producer.name)
+            set_insert(update, event_producer)
         elif update.update_type == "Update":
             set_update(update)
         elif update.update_type == "Delete":
@@ -69,13 +69,13 @@ def pull_producer_data(update, event_producer, in_retry=False):
         if in_retry:
             return "Synced"
         
-        log_event_sync(update, event_producer.name, "Synced")  
+        log_event_sync(update, event_producer, "Synced")  
     except Exception:
         if in_retry:
             if frappe.flags.in_test:
                 print(frappe.get_traceback())
             return "Failed"
-        log_event_sync(update, event_producer.name, "Failed", frappe.get_traceback())
+        log_event_sync(update, event_producer, "Failed", frappe.get_traceback())
 
     frappe.db.commit()
 
@@ -120,7 +120,7 @@ def send_to_node(event_producer, event_consumer):
             "event_streaming.event_streaming.doctype.event_producer.event_producer_send.pull_producer_data",
             params={
                 "update": frappe.as_json(update),
-                "event_producer": event_producer,
+                "event_producer": producer_site,
             },
         )
 
