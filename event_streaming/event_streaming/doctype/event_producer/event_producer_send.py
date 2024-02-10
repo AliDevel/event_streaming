@@ -339,6 +339,8 @@ def create():
 }
 	doc1 = frappe.get_doc(doc)
 	doc1.insert()
+	frappe.db.commit()
+	return doc1
 
 @frappe.whitelist()
 def convert_to_serializable(obj):
