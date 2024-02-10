@@ -219,6 +219,7 @@ def is_consumer_uptodate(update_log, consumer):
 
 
 def mark_consumer_read(update_log_name, consumer_name):
+	pass
 	"""
 	This function appends the Consumer to the list of Consumers that has 'read' an Update Log
 	"""
