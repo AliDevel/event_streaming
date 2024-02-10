@@ -91,7 +91,7 @@ def send_to_node(event_producer, event_consumer):
     event_consumer_doc = frappe.get_doc("Event Consumer Z", event_consumer)
     consumer_site = get_consumer_site(event_consumer_doc.callback_url)
 
-    last_update = event_producer.get_last_update()
+    last_update = event_consumer_doc.get_last_update()
     if 'T' in last_update:
         last_update = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%S.%f")
         last_update = last_update.strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -119,10 +119,11 @@ def send_to_node(event_producer, event_consumer):
                 "event_producer": event_producer,
             },
         )
-        frappe.msgprint(str(x))
-        # event_producer.set_last_update(update.creation)
+		event_consumer_doc.set_last_update(update.creation)
+      
+		
 
-    return last_update
+	return last_update
 
 
 
