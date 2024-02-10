@@ -121,8 +121,8 @@ def make_event_update_log(doc, update_type):
         }
     )	
 	frappe.log_error(frappe.get_traceback(),"Make event"+str(existing_entry))	
-	if not existing_entry:
-			return frappe.get_doc(
+
+	return frappe.get_doc(
 		{
 			"doctype": "Event Update Log",
 			"update_type": update_type,
