@@ -165,6 +165,7 @@ def get_config(event_config):
 
 def set_insert(update,  event_producer):
 	"""Sync insert type update"""
+	frappe.log_error(frappe.get_traceback(), 'insert')
 	if frappe.db.get_value(update.ref_doctype, update.docname):
 		# doc already created
 		return
@@ -172,7 +173,7 @@ def set_insert(update,  event_producer):
 
 	#if update.use_same_name:
 	doc.insert(set_name=update.docname, set_child_names=False)
-	frappe.log_error(frappe.get_traceback(), 'insert')
+	
 	#else:
 		# if event consumer is not saving documents with the same name as the producer
 		# store the remote docname in a custom field for future updates
