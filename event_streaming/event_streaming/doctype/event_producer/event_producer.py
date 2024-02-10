@@ -71,6 +71,9 @@ class EventProducer(Document):
 
 	def create_event_consumer(self):
 		if self.host_url != self.producer_url: 
+			#frappe.msgprint(self.host_url)
+			return 0
+			frappe.msgprint(self.host_url)
 			"""register event consumer on the producer site"""
 			if self.is_producer_online():
 				producer_site = FrappeClient(
@@ -90,8 +93,11 @@ class EventProducer(Document):
 							"Failed to create an Event Consumer or an Event Consumer for the current site is already registered."
 						)
 					)
-			else:
-				register_consumer({"data": json.dumps(self.get_request_data())})
+		else:
+				#return 'hi'
+				#frappe.msgprint(str(self.host_url))
+				
+				return 0
 
 	def set_last_update(self, last_update):
 		last_update_doc_name = frappe.db.get_value(
@@ -129,7 +135,7 @@ class EventProducer(Document):
 		user_secret = get_decrypted_password("User", self.user, "api_secret")
 		return {
 			"event_consumer": get_url(),
-			"consumer_doctypes": json.dumps(consumer_doctypes),
+			"consumer_doctypes": consumer_doctypes,
 			"user": self.user,
 			"api_key": user_key,
 			"api_secret": user_secret,
@@ -205,11 +211,11 @@ class EventProducer(Document):
 @frappe.whitelist()
 def register_consumer(data):
 	"""create an event consumer document for registering a consumer"""
-	data = json.loads(data)
+	data = data
 	# to ensure that consumer is created only once
 	if frappe.db.exists("Event Consumer", data["event_consumer"]):
 		return None
-
+	frappe.msgprint("hi")
 	user = data["user"]
 	if not frappe.db.exists("User", user):
 		frappe.throw(_("User {0} not found on the producer site").format(user))

@@ -12,7 +12,8 @@
   "section_break_3",
   "api_key",
   "api_secret",
-  "column_break_6"
+  "column_break_6",
+  "docs"
  ],
  "fields": [
   {
@@ -42,10 +43,16 @@
   {
    "fieldname": "column_break_6",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "docs",
+   "fieldtype": "Table",
+   "label": "Docs",
+   "options": "Event Consumer Document Type"
   }
  ],
  "links": [],
- "modified": "2024-01-01 23:12:03.127094",
+ "modified": "2024-02-10 17:23:18.692088",
  "modified_by": "Administrator",
  "module": "Event Streaming",
  "name": "Event Consumer Z",
