@@ -70,6 +70,7 @@ class EventProducer(Document):
 			self.producer_url = self.producer_url[:-1]
 
 	def create_event_consumer(self):
+		return
 		"""register event consumer on the producer site"""
 		if self.is_producer_online():
 			producer_site = FrappeClient(
