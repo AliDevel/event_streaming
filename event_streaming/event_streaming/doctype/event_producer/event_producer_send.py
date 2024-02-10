@@ -29,7 +29,7 @@ def get_producer_site(producer_url):
 	return producer_site
 def get_consumer_site(consumer_url):
 	"""create a FrappeClient object for event producer site"""
-	producer_doc = frappe.get_doc("Event Consumer", consumer_url)
+	producer_doc = frappe.get_doc("Event Consumer Z", consumer_url)
 	producer_site = FrappeClient(
 		url=consumer_url,
 		api_key=producer_doc.api_key,
@@ -87,37 +87,44 @@ def send_to_node(event_producer, event_consumer):
     In this case, it will send from the local site to the Remote Site"""
     event_producer = frappe.get_doc("Event Producer", event_producer)
     producer_site = get_producer_site(event_producer.producer_url)
-    
-    event_consumer_doc = frappe.get_doc("Event Consumer", event_consumer)
 
+    event_consumer_doc = frappe.get_doc("Event Consumer Z", event_consumer)
     consumer_site = get_consumer_site(event_consumer_doc.callback_url)
-   
-    last_update =  event_producer.get_last_update()
-    last_update = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%S.%f")
-    last_update = last_update.strftime("%Y-%m-%d %H:%M:%S.%f")
+
+    last_update = event_producer.get_last_update()
+    if 'T' in last_update:
+        last_update = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%S.%f")
+        last_update = last_update.strftime("%Y-%m-%d %H:%M:%S.%f")
     frappe.msgprint(last_update)
     (doctypes, mapping_config, naming_config) = get_config(event_producer.producer_doctypes)
 
     updates = get_updates(event_consumer_doc.callback_url, last_update, doctypes)
-    
+    frappe.msgprint(str(len(updates)))
+
     for update in updates:
         update.use_same_name = naming_config.get(update.ref_doctype)
         mapping = mapping_config.get(update.ref_doctype)
+        update.creation = update.creation.isoformat()  # Corrected indentation here
         if mapping:
             update.mapping = mapping
             update = get_mapped_update(update, producer_site)
         if not update.update_type == "Delete":
             update.data = json.loads(update.data)
-        x= consumer_site.post_api(
-             "event_streaming.event_streaming.doctype.event_producer.event_producer_send.pull_producer_data",
-                params = {"update": frappe.as_json(update),
-                "event_producer": frappe.as_json(event_producer),}
-            
+        frappe.msgprint(str(update.creation))
+
+        x = consumer_site.post_api(
+            "event_streaming.event_streaming.doctype.event_producer.event_producer_send.pull_producer_data",
+            params={
+                "update": frappe.as_json(update),
+                "event_producer": event_producer,
+            },
         )
         frappe.msgprint(str(x))
-        event_producer.set_last_update(update.creation)
+        # event_producer.set_last_update(update.creation)
 
     return last_update
+
+
 
 				
 
@@ -247,7 +254,7 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
 
     from event_streaming.event_streaming.doctype.event_consumer.event_consumer import has_consumer_access
 
-    consumer = frappe.get_doc("Event Consumer", event_consumer)
+    consumer = frappe.get_doc("Event Consumer Z", event_consumer)
     docs = frappe.get_list(
         doctype="Event Update Log",
         filters={"ref_doctype": ("in", doctypes), "creation": (">", last_update)},
@@ -262,8 +269,7 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
             # will be notified by background jobs
             continue
 
-        if not has_consumer_access(consumer=consumer, update_log=d):
-            continue
+     
 
         if not is_consumer_uptodate(d, consumer):
             to_update_history.append((d.ref_doctype, d.docname))

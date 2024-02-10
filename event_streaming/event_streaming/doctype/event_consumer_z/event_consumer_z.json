@@ -2,19 +2,17 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "field:callback_url",
- "creation": "2019-08-26 17:45:15.479530",
+ "creation": "2024-01-01 23:09:49.327026",
+ "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "consumer_doctypes",
   "callback_url",
   "section_break_3",
   "api_key",
   "api_secret",
-  "column_break_6",
-  "user",
-  "incoming_change"
+  "column_break_6"
  ],
  "fields": [
   {
@@ -24,6 +22,10 @@
    "label": "Callback URL",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "section_break_3",
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "api_key",
@@ -38,42 +40,15 @@
    "reqd": 1
   },
   {
-   "fieldname": "user",
-   "fieldtype": "Link",
-   "label": "Event Subscriber",
-   "options": "User",
-   "read_only": 1,
-   "reqd": 1
-  },
-  {
-   "fieldname": "section_break_3",
-   "fieldtype": "Section Break"
-  },
-  {
    "fieldname": "column_break_6",
    "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "incoming_change",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Incoming Change",
-   "read_only": 1
-  },
-  {
-   "fieldname": "consumer_doctypes",
-   "fieldtype": "Table",
-   "label": "Event Consumer Document Types",
-   "options": "Event Consumer Document Type",
-   "reqd": 1
   }
  ],
  "links": [],
- "modified": "2024-01-01 23:04:54.461675",
+ "modified": "2024-01-01 23:12:03.127094",
  "modified_by": "Administrator",
  "module": "Event Streaming",
- "name": "Event Consumer",
+ "name": "Event Consumer Z",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [

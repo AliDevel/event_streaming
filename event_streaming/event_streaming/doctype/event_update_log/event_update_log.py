@@ -103,7 +103,18 @@ def make_event_update_log(doc, update_type):
 		data = frappe.as_json(doc) if not doc.get("diff") else frappe.as_json(doc.diff)
 	else:
 		data = None
-	return frappe.get_doc(
+		existing_entry = frappe.get_all(
+        "Event Update Log",
+        filters={
+            "update_type": update_type,
+            "ref_doctype": doc.doctype,
+            "docname": doc.name,
+            "data": data,
+        },
+        limit=1,
+    )
+		if not existing_entry:
+			return frappe.get_doc(
 		{
 			"doctype": "Event Update Log",
 			"update_type": update_type,
