@@ -62,7 +62,7 @@ def pull_producer_data(update, event_producer, in_retry=False):
     try:
         if update.get('update_type') == "Create":
             #return create(update)
-            set_insert(update, event_producer)
+            return set_insert(update, event_producer)
         elif update.get('update_type') == "Update":
             set_update(update)
         elif update.get('update_type') == "Delete":
@@ -175,13 +175,13 @@ def set_insert(update,  event_producer):
 
 	#frappe.log_error(frappe.get_traceback(), 'insert1')	
 	#frappe.log_error(frappe.get_traceback(), str(update.data))
-	doc = frappe.get_doc(update.data)
+	doc = frappe.get_doc(update.get('data'))
 	#frappe.log_error(frappe.get_traceback(), 'insert2')	
 	
 	#if update.use_same_name:
-	doc.remote_docname = update.docname
+	doc.remote_docname = update.get('docname')
 	doc.remote_site_name = event_producer
-	doc.insert(set_name=update.docname, set_child_names=False)
+	doc.insert(set_name=update.get('docname'), set_child_names=False)
 	frappe.db.commit()
 
 	#else:
