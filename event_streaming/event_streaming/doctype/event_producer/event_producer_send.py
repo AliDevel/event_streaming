@@ -63,9 +63,9 @@ def pull_producer_data(update, event_producer, in_retry=False):
         if update.get('update_type') == "Create":
             #return create(update)
             set_insert(update, event_producer)
-        elif update.update_type == "Update":
+        elif update.get('update_type') == "Update":
             set_update(update)
-        elif update.update_type == "Delete":
+        elif update.get('update_type') == "Delete":
             set_delete(update)
 
         if in_retry:
