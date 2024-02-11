@@ -172,7 +172,7 @@ def set_update(update):
     local_doc = get_local_doc(update)
    
     if local_doc:
-        data = frappe._dict(update.data)
+        data = frappe._dict(update.get('data'))
 
         if data.changed:
             local_doc.update(data.changed)
