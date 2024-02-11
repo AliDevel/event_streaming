@@ -374,7 +374,7 @@ def get_local_doc(update):
 
 def log_event_sync(update, event_producer, sync_status, error=None):
 	"""Log event update received with the sync_status as Synced or Failed"""
-	update= frappe._dict(json.loads(update))
+	update= frappe._dict(update)
 	doc = frappe.new_doc("Event Sync Log")
 	doc.update_type = update.update_type
 	doc.ref_doctype = update.ref_doctype
