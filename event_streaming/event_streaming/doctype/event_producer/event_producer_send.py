@@ -60,7 +60,7 @@ def pull_producer_data(update, event_producer, in_retry=False):
    ## frappe.log_error(frappe.get_traceback(), 'Hi')
 
     try:
-        if update.update_type == "Create":
+        if update.get('update_type') == "Create":
             return create(update)
 			#set_insert(update, event_producer)
         elif update.update_type == "Update":
@@ -120,7 +120,7 @@ def send_to_node(event_producer, event_consumer):
         x = consumer_site.post_request(
             {
                 "cmd": "event_streaming.event_streaming.doctype.event_producer.event_producer_send.pull_producer_data",
-                "update": frappe.parse_json(update),
+                "update": json.dumps(update),
                 "event_producer": producer_site,
             }
         )
