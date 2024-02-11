@@ -32,13 +32,10 @@ def notify_consumers(doc, event):
 
 	if consumers   :					
 		if event == "after_insert":
-			frappe.log_error(frappe.get_traceback(), event )
 			doc.flags.event_update_log = make_event_update_log(doc, update_type="Create")
 		elif event == "on_trash":
 			make_event_update_log(doc, update_type="Delete")
 		else:
-			frappe.log_error(frappe.get_traceback(), event )
-			frappe.log_error(frappe.get_traceback(), doc )
 			# on_update
 			# called after saving
 			if not doc.flags.event_update_log:  # if not already inserted
@@ -111,20 +108,29 @@ def make_event_update_log(doc, update_type):
 	else:
 		
 		data = None
-	existing_entry = frappe.get_all(
-        "Event Update Log",
-        filters={
-            "update_type": update_type,
-            "ref_doctype": doc.doctype,
-            "docname": doc.name,
-            "data": data,
-        },
-        limit=1,
-    )	
-	
-	frappe.log_error(frappe.get_traceback(),"Make event"+str(existing_entry))	
-	#if not existing_entry:
-	doc = frappe.get_doc(
+	existing_entry = frappe.get_value(
+    "Event Update Log",
+    filters={
+        "update_type": update_type,
+        "ref_doctype": doc.doctype,
+        "docname": doc.name,
+        "data": data,
+    },
+    fieldname="name",  # Replace with the field you want to retrieve
+)
+	existing_entry_sync = frappe.get_value(
+    "Event Sync Log",
+    filters={
+        "update_type": update_type,
+        "ref_doctype": doc.doctype,
+        "docname": doc.name,
+        "data": data,
+    },
+    fieldname="name",  # Replace with the field you want to retrieve
+)
+	frappe.log_error(frappe.get_traceback(),"Make event"+str(existing_entry)+str(existing_entry_sync))	
+	if not existing_entry and not existing_entry_sync:
+		doc = frappe.get_doc(
 		{
 			"doctype": "Event Update Log",
 			"update_type": update_type,
@@ -133,7 +139,16 @@ def make_event_update_log(doc, update_type):
 			"data": data,
 		}
 	).insert(ignore_permissions=True)
-			
+	else:
+		doc = frappe.get_doc(
+		{
+			"doctype": "Event Update Log",
+			"update_type": update_type,
+			"ref_doctype": doc.doctype,
+			"docname": doc.name,
+			"data": data,
+		}
+	)			
 	return doc
 
 
