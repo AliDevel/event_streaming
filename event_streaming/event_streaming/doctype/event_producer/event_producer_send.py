@@ -38,12 +38,7 @@ def get_consumer_site(consumer_url):
 	return producer_site
 
 
-def get_approval_status(config, ref_doctype):
-	"""check the approval status for consumption"""
-	for entry in config:
-		if entry.get("ref_doctype") == ref_doctype:
-			return entry.get("status")
-	return "Pending"
+
 
 
 @frappe.whitelist()
@@ -93,7 +88,7 @@ def send_to_node(event_producer, event_consumer):
     event_consumer_doc = frappe.get_doc("Event Consumer Z", event_consumer)
     consumer_site = get_consumer_site(event_consumer_doc.callback_url)
 
-    last_update = '0'  # event_consumer_doc.get_last_update()
+    last_update = event_consumer_doc.get_last_update()
     if 'T' in last_update:
         last_update = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%S.%f")
         last_update = last_update.strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -125,17 +120,10 @@ def send_to_node(event_producer, event_consumer):
             }
         )
 
-        # event_consumer_doc.set_last_update(update.creation)
+        event_consumer_doc.set_last_update(update.creation)
 
     return last_update
 
-@frappe.whitelist()
-def create(doc):
-	
-	doc1 = frappe.get_doc(doc.get('data'))
-	doc1.insert()
-	frappe.db.commit()
-	return doc1
 
 @frappe.whitelist()
 def convert_to_serializable(obj):
@@ -172,24 +160,11 @@ def get_config(event_config):
 
 def set_insert(update,  event_producer):
 	"""Sync insert type update"""
-
-	#frappe.log_error(frappe.get_traceback(), 'insert1')	
-	#frappe.log_error(frappe.get_traceback(), str(update.data))
 	doc = frappe.get_doc(update.get('data'))
-	#frappe.log_error(frappe.get_traceback(), 'insert2')	
-	
-	#if update.use_same_name:
 	doc.remote_docname = update.get('docname')
 	doc.remote_site_name = event_producer
 	doc.insert(set_name=update.get('docname'), set_child_names=False)
 	frappe.db.commit()
-
-	#else:
-		# if event consumer is not saving documents with the same name as the producer
-		# store the remote docname in a custom field for future updates
-		#doc.remote_docname = update.docname
-		#doc.remote_site_name = event_producer
-		#doc.insert(set_child_names=False)
 
 
 def set_update(update):
@@ -365,9 +340,9 @@ def mark_consumer_read(update_log_name, consumer_name):
 def get_local_doc(update):
     """Get the local document if created with a different name"""
     try:
-        if not update.use_same_name:
-            return frappe.get_doc(update.ref_doctype, {"remote_docname": update.docname})
-        return frappe.get_doc(update.ref_doctype, update.docname)
+        if not update.get('use_same_name'):
+            return frappe.get_doc(update.ref_doctype, {"remote_docname": update.get('docname')})
+        return frappe.get_doc(update.get('ref_doctype'), update.get('docname'))
     except frappe.DoesNotExistError:
         return None
 
@@ -411,17 +386,6 @@ def get_mapped_update(update, producer_site):
 
 
 
-
-@frappe.whitelist()
-def resync(update):
-	"""Retry syncing update if failed"""
-	update = frappe._dict(json.loads(update))
-	producer_site = get_producer_site(update.event_producer)
-	event_producer = frappe.get_doc("Event Producer", update.event_producer)
-	if update.mapping:
-		update = get_mapped_update(update, producer_site)
-		update.data = json.loads(update.data)
-	return sync(update, producer_site, event_producer, in_retry=True)
 def get_unread_update_logs(consumer_name, dt, dn):
 	"""
 	Get old logs unread by the consumer on a particular document

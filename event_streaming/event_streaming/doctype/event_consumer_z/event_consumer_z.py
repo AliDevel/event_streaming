@@ -19,14 +19,14 @@ class EventConsumerZ(Document):
 		if not last_update_doc_name:
 			frappe.get_doc(
 				dict(
-					doctype="Event Consumer z Last Update",
+					doctype="Event Consumer Z Last Update",
 					event_consumer_z=self.name,
 					last_update=last_update,
 				)
 			).insert(ignore_permissions=True)
 		else:
 			frappe.db.set_value(
-				"Event Consumer z Last Update", last_update_doc_name, "last_update", last_update
+				"Event Consumer Z Last Update", last_update_doc_name, "last_update", last_update
 			)
 	
 	def get_last_update(self):
