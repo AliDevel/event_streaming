@@ -132,7 +132,7 @@ def send_to_node(event_producer, event_consumer):
 @frappe.whitelist()
 def create(doc):
 	
-	doc1 = frappe.get_doc(doc.data)
+	doc1 = frappe.get_doc(doc.get('data'))
 	doc1.insert()
 	frappe.db.commit()
 	return doc1
