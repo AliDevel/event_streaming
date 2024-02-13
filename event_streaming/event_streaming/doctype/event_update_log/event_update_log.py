@@ -300,7 +300,7 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
 	Fetches all the UpdateLogs for the consumer
 	It will inject old un-consumed Update Logs if a doc was just found to be accessible to the Consumer
 	"""
-
+	return "hello"
 	if isinstance(doctypes, str):
 		doctypes = frappe.parse_json(doctypes)
 
