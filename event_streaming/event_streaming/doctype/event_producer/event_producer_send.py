@@ -45,8 +45,7 @@ def get_consumer_site(consumer_url):
 def pull_producer_data(update, event_producer, in_retry=False):
     """Sync the individual update"""
     #frappe.log_error(frappe.get_traceback(), 'payment failed')
-    frappe.msgprint("hello")
-    frappe.msgprint(str(update))
+
     if isinstance(update, str):
         update = json.loads(update)
         frappe.log_error(frappe.get_traceback(), frappe.parse_json(update))
@@ -92,12 +91,12 @@ def send_to_node(event_producer, event_consumer):
     if 'T' in last_update:
         last_update = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%S.%f")
         last_update = last_update.strftime("%Y-%m-%d %H:%M:%S.%f")
-    frappe.msgprint(str(last_update))
+
 
     (doctypes, mapping_config, naming_config) = get_config(event_producer.producer_doctypes)
 
     updates = get_updates(event_consumer_doc.callback_url, last_update, doctypes)
-    frappe.msgprint(str(updates))
+
 
     for update in updates:
         update.use_same_name = naming_config.get(update.ref_doctype)
@@ -109,7 +108,7 @@ def send_to_node(event_producer, event_consumer):
             update = get_mapped_update(update, producer_site)
         if not update.update_type == "Delete":
             update.data = json.loads(update.data)
-            frappe.msgprint(str(update.data))  # Fixed indentation
+   
             # Construct a list of JSON-formatted strings
           
         x = consumer_site.post_request(
@@ -124,7 +123,13 @@ def send_to_node(event_producer, event_consumer):
 
     return last_update
 
+@frappe.whitelist()
+def notify_event_consumers( doctype= None ):
 
+	
+	sync = frappe.db.get_value("Syncronize", {"name": "SEND"}, ["producer", "consumer"], as_dict=True)
+	frappe.log_error(frappe.get_traceback(), 'payment failed')
+	send_to_node(sync.producer,sync.consumer)
 @frappe.whitelist()
 def convert_to_serializable(obj):
     if isinstance(obj, datetime):
@@ -259,8 +264,7 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
         fields=["update_type", "ref_doctype", "docname", "data", "name","creation"],
         order_by="creation desc",
     )
-	
-    frappe.msgprint(str(len(docs)))
+
     result = []
     to_update_history = []
     for d in docs:

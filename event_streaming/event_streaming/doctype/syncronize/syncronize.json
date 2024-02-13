@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "prompt",
  "creation": "2023-12-28 21:23:13.202538",
  "default_view": "List",
  "doctype": "DocType",
@@ -24,10 +25,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-01 21:18:17.243177",
+ "modified": "2024-02-11 18:42:00.625460",
  "modified_by": "Administrator",
  "module": "Event Streaming",
  "name": "Syncronize",
+ "naming_rule": "Set by user",
  "owner": "Administrator",
  "permissions": [
   {

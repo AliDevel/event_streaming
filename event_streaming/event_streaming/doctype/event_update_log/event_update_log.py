@@ -5,10 +5,22 @@ import frappe
 from frappe.model import no_value_fields, table_fields
 from frappe.model.document import Document
 from frappe.utils.background_jobs import get_jobs
-
+from event_streaming.event_streaming.doctype.event_producer.event_producer_send import notify_event_consumers
 
 class EventUpdateLog(Document):
-	pass
+	def after_insert(self):
+	
+		"""Send update notification updates to event consumers
+		whenever update log is generated"""
+		enqueued_method = (
+			"event_streaming.event_streaming.doctype.event_producer.event_producer_send.notify_event_consumers"
+		)
+		jobs = get_jobs()
+		frappe.log_error(frappe.get_traceback(), jobs )
+		if not jobs or enqueued_method not in jobs[frappe.local.site]:
+			frappe.enqueue(
+				enqueued_method, doctype=self.ref_doctype, queue="long", enqueue_after_commit=True
+			)
 
 
 def notify_consumers(doc, event):
