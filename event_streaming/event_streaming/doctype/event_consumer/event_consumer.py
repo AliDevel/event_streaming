@@ -23,10 +23,11 @@ class EventConsumer(Document):
 				entry.status = "Approved"
 
 	def on_update(self):
+		return 0
 		if not self.incoming_change:
 			doc_before_save = self.get_doc_before_save()
-			if doc_before_save.api_key != self.api_key or doc_before_save.api_secret != self.api_secret:
-				return
+			#if doc_before_save.api_key != self.api_key or doc_before_save.api_secret != self.api_secret:
+			#	return
 
 			self.update_consumer_status()
 		else:
@@ -45,6 +46,7 @@ class EventConsumer(Document):
 			frappe.delete_doc("Event Update Log Consumer", i.name)
 
 	def update_consumer_status(self):
+		return 0
 		consumer_site = get_consumer_site(self.callback_url)
 		event_producer = consumer_site.get_doc("Event Producer", get_url())
 		event_producer = frappe._dict(event_producer)

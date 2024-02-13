@@ -288,12 +288,14 @@ def pull_from_node(event_producer):
 	event_producer = frappe.get_doc("Event Producer", event_producer)
 	producer_site = get_producer_site(event_producer.producer_url)
 	last_update = event_producer.get_last_update()
+	if not last_update:
+		last_update = '0' 
 	frappe.msgprint(str(last_update))
 
 	(doctypes, mapping_config, naming_config) = get_config(event_producer.producer_doctypes)
 
 	updates = get_updates(producer_site, last_update, doctypes)
-
+	frappe.msgprint(str(updates))
 
 	for update in updates:
 		update.use_same_name = naming_config.get(update.ref_doctype)

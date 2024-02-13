@@ -88,6 +88,8 @@ def send_to_node(event_producer, event_consumer):
     consumer_site = get_consumer_site(event_consumer_doc.callback_url)
 
     last_update = event_consumer_doc.get_last_update()
+    if not last_update:
+      last_update = '0' 
     if 'T' in last_update:
         last_update = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%S.%f")
         last_update = last_update.strftime("%Y-%m-%d %H:%M:%S.%f")
