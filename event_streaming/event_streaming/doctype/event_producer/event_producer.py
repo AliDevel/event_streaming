@@ -458,6 +458,7 @@ def set_delete(update):
 def get_updates(producer_site, last_update, doctypes):
 	"""Get all updates generated after the last update timestamp"""
 	frappe.msgprint(str(get_url()))
+	frappe.msgprint(str(doctypes))
 	docs = producer_site.post_request(
 		{
 			"cmd": "event_streaming.event_streaming.doctype.event_update_log.event_update_log.get_update_logs_for_consumer",
