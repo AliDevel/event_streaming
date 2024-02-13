@@ -316,7 +316,7 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
 		fields=["update_type", "ref_doctype", "docname", "data", "name", "creation"],
 		order_by="creation desc",
 	)
-
+	frappe.log_error(frappe.get_traceback(), docs )
 	result = []
 	to_update_history = []
 	for d in docs:
