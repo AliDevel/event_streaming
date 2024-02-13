@@ -130,7 +130,7 @@ def notify_event_consumers( doctype= None ):
 
 	
 	sync = frappe.db.get_value("Syncronize", {"name": "SEND"}, ["producer", "consumer"], as_dict=True)
-	frappe.log_error(frappe.get_traceback(), 'payment failed')
+	#frappe.log_error(frappe.get_traceback(), 'payment failed')
 	send_to_node(sync.producer,sync.consumer)
 @frappe.whitelist()
 def convert_to_serializable(obj):

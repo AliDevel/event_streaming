@@ -15,12 +15,12 @@ class EventUpdateLog(Document):
 		enqueued_method = (
 			"event_streaming.event_streaming.doctype.event_producer.event_producer_send.notify_event_consumers"
 		)
-		jobs = get_jobs()
-		frappe.log_error(frappe.get_traceback(), jobs )
-		if not jobs or enqueued_method not in jobs[frappe.local.site]:
-			frappe.enqueue(
-				enqueued_method, doctype=self.ref_doctype, queue="long", enqueue_after_commit=True
-			)
+		#jobs = get_jobs()
+		#frappe.log_error(frappe.get_traceback(), jobs )
+		#if not jobs or enqueued_method not in jobs[frappe.local.site]:
+		#	frappe.enqueue(
+		#		enqueued_method, doctype=self.ref_doctype, queue="long", enqueue_after_commit=True
+		#	)
 
 
 def notify_consumers(doc, event):
@@ -130,7 +130,7 @@ def make_event_update_log(doc, update_type):
     },
     fieldname="name",  # Replace with the field you want to retrieve
 )
-	frappe.log_error(frappe.get_traceback(),"Make event"+str(existing_entry)+str(existing_entry_sync))	
+	#frappe.log_error(frappe.get_traceback(),"Make event"+str(existing_entry)+str(existing_entry_sync))	
 	if not existing_entry and not existing_entry_sync:
 		doc = frappe.get_doc(
 		{
@@ -317,7 +317,7 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
 		order_by="creation desc",
 	)
 	return docs
-	frappe.log_error(frappe.get_traceback(), docs )
+	#frappe.log_error(frappe.get_traceback(), docs )
 	result = []
 	to_update_history = []
 	for d in docs:
