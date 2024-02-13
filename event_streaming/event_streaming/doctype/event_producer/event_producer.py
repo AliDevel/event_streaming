@@ -71,7 +71,7 @@ class EventProducer(Document):
 
 	def create_event_consumer(self):
 		if self.host_url != self.producer_url: 
-			return 0
+	
 			"""register event consumer on the producer site"""
 			if self.is_producer_online():
 				producer_site = FrappeClient(
@@ -133,7 +133,7 @@ class EventProducer(Document):
 		user_secret = get_decrypted_password("User", self.user, "api_secret")
 		return {
 			"event_consumer": get_url(),
-			"consumer_doctypes": consumer_doctypes,
+			"consumer_doctypes": json.dumps(consumer_doctypes),
 			"user": self.user,
 			"api_key": user_key,
 			"api_secret": user_secret,
@@ -288,9 +288,6 @@ def pull_from_node(event_producer):
 	event_producer = frappe.get_doc("Event Producer", event_producer)
 	producer_site = get_producer_site(event_producer.producer_url)
 	last_update = event_producer.get_last_update()
-	if not last_update:
-		last_update = '0' 
-	frappe.msgprint(str(last_update))
 
 	(doctypes, mapping_config, naming_config) = get_config(event_producer.producer_doctypes)
 
