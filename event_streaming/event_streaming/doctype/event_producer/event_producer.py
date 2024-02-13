@@ -71,9 +71,7 @@ class EventProducer(Document):
 
 	def create_event_consumer(self):
 		if self.host_url != self.producer_url: 
-			#frappe.msgprint(self.host_url)
-			return 0
-			frappe.msgprint(self.host_url)
+			
 			"""register event consumer on the producer site"""
 			if self.is_producer_online():
 				producer_site = FrappeClient(
