@@ -314,7 +314,7 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
 		doctype="Event Update Log",
 		filters={"ref_doctype": ("in", doctypes), "creation": (">", last_update)},
 		fields=["update_type", "ref_doctype", "docname", "data", "name", "creation"],
-		order_by="creation desc",
+		order_by="creation asc",
 	)
 	return docs
 	#frappe.log_error(frappe.get_traceback(), docs )
