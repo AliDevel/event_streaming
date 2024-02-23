@@ -9,7 +9,7 @@ from event_streaming.event_streaming.doctype.event_producer.event_producer_send 
 
 class EventUpdateLog(Document):
 	def before_insert(self):
-		if self.custom_from_sync == 0:
+		if self.from_sync == 0:
 			pass
 		else:
 			frappe.throw("Saving not allowed due to some condition")
