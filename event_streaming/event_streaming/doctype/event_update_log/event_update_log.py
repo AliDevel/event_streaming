@@ -8,11 +8,6 @@ from frappe.utils.background_jobs import get_jobs
 from event_streaming.event_streaming.doctype.event_producer.event_producer_send import notify_event_consumers
 
 class EventUpdateLog(Document):
-	def before_insert(self):
-		if self.from_sync == 0:
-			pass
-		else:
-			frappe.throw("Saving not allowed due to some condition")
 
 	def after_insert(self):
 	
@@ -165,7 +160,7 @@ def make_event_update_log(doc, update_type):
 	#frappe.log_error(frappe.get_traceback(),"Make event"+str(existing_entry)+str(existing_entry_sync))	
 	if not existing_entry_name  and from_sync == 0:
 			doc = frappe.get_doc(
-		{	"custom_from_sync": 0,
+		{
 			"doctype": "Event Update Log",
 			"update_type": update_type,
 			"ref_doctype": doc.doctype,
