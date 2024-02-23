@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:callback_url",
  "creation": "2024-01-01 23:09:49.327026",
@@ -52,7 +53,7 @@
   }
  ],
  "links": [],
- "modified": "2024-02-10 17:23:18.692088",
+ "modified": "2024-02-16 22:27:01.796568",
  "modified_by": "Administrator",
  "module": "Event Streaming",
  "name": "Event Consumer Z",

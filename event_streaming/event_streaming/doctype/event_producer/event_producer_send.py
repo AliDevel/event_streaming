@@ -98,7 +98,7 @@ def send_to_node(event_producer, event_consumer):
     (doctypes, mapping_config, naming_config) = get_config(event_producer.producer_doctypes)
 
     updates = get_updates(event_consumer_doc.callback_url, last_update, doctypes)
-
+ 
 
     for update in updates:
         update.use_same_name = naming_config.get(update.ref_doctype)

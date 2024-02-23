@@ -8,6 +8,12 @@ from frappe.utils.background_jobs import get_jobs
 from event_streaming.event_streaming.doctype.event_producer.event_producer_send import notify_event_consumers
 
 class EventUpdateLog(Document):
+	def before_insert(self):
+		if self.custom_from_sync == 0:
+			pass
+		else:
+			frappe.throw("Saving not allowed due to some condition")
+
 	def after_insert(self):
 	
 		"""Send update notification updates to event consumers
@@ -22,17 +28,49 @@ class EventUpdateLog(Document):
 		#		enqueued_method, doctype=self.ref_doctype, queue="long", enqueue_after_commit=True
 		#	)
 
-
-def notify_consumers(doc, event):
+@frappe.whitelist()
+def notify_consumers_z(doc, event):
+	
+	if doc.doctype != "Sales Invoice":
+		return
 	
 	"""called via hooks"""
+
 	# make event update log for doctypes having event consumers
 	if frappe.flags.in_install or frappe.flags.in_migrate:
 		return
+	
 
 	consumers = check_doctype_has_consumers(doc.doctype)
+	if consumers or doc.doctype == 'Sales Invoice':
+		pass
+	if consumers and doc.from_sync == 0 :				
+	
+		if event == "after_insert":
+			doc.flags.event_update_log = make_event_update_log(doc, update_type="Create")
+		elif event == "on_trash":
+			make_event_update_log(doc, update_type="Delete")
+		else:
+			# on_update
+			# called after saving
+			if not doc.flags.event_update_log:  # if not already inserted
+				diff = get_update(doc.get_doc_before_save(), doc)
+				if diff:
+					doc.diff = diff
+					make_event_update_log(doc, update_type="Update")
+@frappe.whitelist()
+def notify_consumers(doc, event,doctype):
+	"""called via hooks"""
+	if doctype != 'Sales':
+		return
+	# make event update log for doctypes having event consumers
+	if frappe.flags.in_install or frappe.flags.in_migrate:
+		return
+	doc= frappe._dict(doc)
+	consumers = check_doctype_has_consumers(doc.doctype)
 
-	if consumers   :					
+		
+	if consumers and doc.from_sync == 0 :				
 		if event == "after_insert":
 			doc.flags.event_update_log = make_event_update_log(doc, update_type="Create")
 		elif event == "on_trash":
@@ -110,30 +148,24 @@ def make_event_update_log(doc, update_type):
 	else:
 		
 		data = None
-	existing_entry = frappe.get_value(
-    "Event Update Log",
-    filters={
-        "update_type": update_type,
-        "ref_doctype": doc.doctype,
-        "docname": doc.name,
-        "data": data,
-    },
-    fieldname="name",  # Replace with the field you want to retrieve
-)
-	existing_entry_sync = frappe.get_value(
-    "Event Sync Log",
-    filters={
-        "update_type": update_type,
-        "ref_doctype": doc.doctype,
-        "docname": doc.name,
-        "data": data,
-    },
-    fieldname="name",  # Replace with the field you want to retrieve
-)
+	sql_query = """
+    SELECT name
+    FROM `tabEvent Update Log`
+    WHERE update_type = %s AND ref_doctype = %s AND docname = %s AND data = %s
+    LIMIT 1
+"""
+
+# Execute the query with parameters
+	result = frappe.db.sql(sql_query, (update_type, doc.doctype, doc.name, data), as_dict=True)
+
+# If there are results, access the name
+	existing_entry_name = result[0]["name"] if result else None
+	
+	from_sync = doc.from_sync
 	#frappe.log_error(frappe.get_traceback(),"Make event"+str(existing_entry)+str(existing_entry_sync))	
-	if not existing_entry and not existing_entry_sync:
-		doc = frappe.get_doc(
-		{
+	if not existing_entry_name  and from_sync == 0:
+			doc = frappe.get_doc(
+		{	"custom_from_sync": 0,
 			"doctype": "Event Update Log",
 			"update_type": update_type,
 			"ref_doctype": doc.doctype,
@@ -141,16 +173,8 @@ def make_event_update_log(doc, update_type):
 			"data": data,
 		}
 	).insert(ignore_permissions=True)
-	else:
-		doc = frappe.get_doc(
-		{
-			"doctype": "Event Update Log",
-			"update_type": update_type,
-			"ref_doctype": doc.doctype,
-			"docname": doc.name,
-			"data": data,
-		}
-	)			
+	elif from_sync == 0:
+		pass
 	return doc
 
 

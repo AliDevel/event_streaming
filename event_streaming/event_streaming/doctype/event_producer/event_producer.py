@@ -279,12 +279,20 @@ def pull_producer_data():
 			pull_from_node(event_producer.name)
 		return "success"
 	return None
-
-
+def pull_from_node_z():
+	sync = frappe.db.get_value("Syncronize", {"name": "GET"}, ["producer", "consumer"], as_dict=True)
+	"""Pull data from producer when notified"""
+	#enqueued_method = "event_streaming.event_streaming.doctype.event_producer.event_producer.pull_from_node_x"
+	pull_from_node(sync.producer)
+@frappe.whitelist()
+def pull_from_node_x():
+	sync = frappe.db.get_value("Syncronize", {"name": "GET"}, ["producer", "consumer"], as_dict=True)
+	"""Pull data from producer when notified"""
+	#enqueued_method = "event_streaming.event_streaming.doctype.event_producer.event_producer.pull_from_node_x"
+	pull_from_node(sync.producer)
 @frappe.whitelist()
 def pull_from_node(event_producer):
 	"""pull all updates after the last update timestamp from event producer site"""
-
 	event_producer = frappe.get_doc("Event Producer", event_producer)
 	producer_site = get_producer_site(event_producer.producer_url)
 	last_update = event_producer.get_last_update()
@@ -292,8 +300,6 @@ def pull_from_node(event_producer):
 	(doctypes, mapping_config, naming_config) = get_config(event_producer.producer_doctypes)
 
 	updates = get_updates(producer_site, last_update, doctypes)
-	frappe.msgprint(str(updates))
-
 	for update in updates:
 		update.use_same_name = naming_config.get(update.ref_doctype)
 		mapping = mapping_config.get(update.ref_doctype)
@@ -326,7 +332,6 @@ def get_config(event_config):
 
 def sync(update, producer_site, event_producer, in_retry=False):
 	"""Sync the individual update"""
-	frappe.msgprint("sync"+str(update))
 	try:
 		if update.update_type == "Create":
 			set_insert(update, producer_site, event_producer.name)
@@ -368,10 +373,12 @@ def set_insert(update, producer_site, event_producer):
 	if update.use_same_name:
 		doc.remote_docname = update.docname
 		doc.remote_site_name = event_producer
+		doc.from_sync = 1
 		doc.insert(set_name=update.docname, set_child_names=False)
 	else:
 		# if event consumer is not saving documents with the same name as the producer
 		# store the remote docname in a custom field for future updates
+		doc.from_sync = 1
 		doc.remote_docname = update.docname
 		doc.remote_site_name = event_producer
 		doc.insert(set_child_names=False)
@@ -400,7 +407,7 @@ def set_update(update, producer_site):
 		else:
 			pass
 			#sync_dependencies(local_doc, producer_site)
-
+		local_doc.from_sync = 1
 		local_doc.save()
 		local_doc.db_update_all()
 
@@ -454,17 +461,18 @@ def set_delete(update):
 
 def get_updates(producer_site, last_update, doctypes):
 	"""Get all updates generated after the last update timestamp"""
-	frappe.msgprint(str(get_url()))
-	frappe.msgprint(str(doctypes))
+
+	url = get_url()
+	url = url.replace("http://", "https://")
+
 	docs = producer_site.post_request(
 		{
 			"cmd": "event_streaming.event_streaming.doctype.event_update_log.event_update_log.get_update_logs_for_consumer",
-			"event_consumer": get_url(),
+			"event_consumer": url,
 			"doctypes": frappe.as_json(doctypes),
 			"last_update": last_update,
 		}
 	)
-	frappe.msgprint(str(docs))	
 	return [frappe._dict(d) for d in (docs or [])]
 
 

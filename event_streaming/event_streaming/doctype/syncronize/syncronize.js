@@ -5,8 +5,11 @@ frappe.ui.form.on("Syncronize", {
 	refresh: function (frm) {
 		
 			frm.add_custom_button(__("Resync"), function () {
+			//	setInterval(function () {
+				
+			
 				frappe.call({
-					method: "event_streaming.event_streaming.doctype.event_producer.event_producer.pull_from_node",
+					method: "event_streaming.event_streaming.doctype.event_producer.event_producer.pull_from_node_x",
 					args: {
 						event_producer: frm.doc.producer,
 					},
@@ -17,7 +20,8 @@ frappe.ui.form.on("Syncronize", {
 							frm.save();
 						}
 					},
-				});
+				});	
+			//}, 60000); 
 			});
 			frm.add_custom_button(__("Send"), function () {
 				frappe.call({

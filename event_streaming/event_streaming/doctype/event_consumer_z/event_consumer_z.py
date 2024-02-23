@@ -11,7 +11,14 @@ from frappe.model.document import Document
 from frappe.utils.background_jobs import get_jobs
 from frappe.utils.data import get_link_to_form, get_url
 from frappe.utils.password import get_decrypted_password
+from frappe.utils import now_datetime
+
 class EventConsumerZ(Document):
+	def after_insert(self):
+	# Assuming you want to set the last update time to the current datetime when a new document is inserted
+		last_update = now_datetime()
+		self.set_last_update(last_update)
+		
 	def set_last_update(self, last_update):
 		last_update_doc_name = frappe.db.get_value(
 			"Event Consumer Z Last Update", dict(event_consumer_z=self.name)
