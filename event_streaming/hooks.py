@@ -104,20 +104,21 @@ app_license = "MIT"
 
 # Scheduled Tasks
 # ---------------
-doc_events = {
-    "*": {
-        "after_insert": "event_streaming.event_streaming.doctype.event_update_log.event_update_log.notify_consumers_z",
-         "on_update": "event_streaming.event_streaming.doctype.event_update_log.event_update_log.notify_consumers_z",
-        "on_cancel": "event_streaming.event_streaming.doctype.event_update_log.event_update_log.notify_consumers_z",
-        "on_trash": "event_streaming.event_streaming.doctype.event_update_log.event_update_log.notify_consumers_z"
-    }
-}
-scheduler_events = {
-	"cron": {
-		"* * * * *": [
-			"event_streaming.event_streaming.doctype.event_producer.event_producer.pull_from_node_z",
-		],
-        }}
+#doc_events = {
+ #   "*": {
+  #      "after_insert": "event_streaming.event_streaming.doctype.event_update_log.event_update_log.notify_consumers_z",
+   #      "on_update": "event_streaming.event_streaming.doctype.event_update_log.event_update_log.notify_consumers_z",
+    #    "on_cancel": "event_streaming.event_streaming.doctype.event_update_log.event_update_log.notify_consumers_z",
+     #   "on_trash": "event_streaming.event_streaming.doctype.event_update_log.event_update_log.notify_consumers_z"
+    #}
+#}
+#scheduler_events = {
+#	"cron": {
+#		"* * * * *": [
+#			"event_streaming.event_streaming.doctype.event_producer.event_producer.pull_from_node_z",
+#
+#		],
+ #       }}
 # scheduler_events = {
 #	"all": [
 #		"event_streaming.tasks.all"

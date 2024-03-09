@@ -2,7 +2,7 @@
 # License: MIT. See LICENSE
 import json
 
-from event_streaming.event_streaming.doctype.event_producer.event_producer import pull_from_node
+from event_streaming.event_streaming_m.doctype.event_producer.event_producer import pull_from_node
 
 import frappe
 from frappe.core.doctype.user.user import generate_keys

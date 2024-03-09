@@ -34,7 +34,7 @@ class EventConsumer(Document):
 			frappe.db.set_value(self.doctype, self.name, "incoming_change", 0)
 
 	def clear_cache(self):
-		from event_streaming.event_streaming.doctype.event_update_log.event_update_log import (
+		from event_streaming.event_streaming_m.doctype.event_update_log.event_update_log import (
 			ENABLED_DOCTYPES_CACHE_KEY,
 		)
 

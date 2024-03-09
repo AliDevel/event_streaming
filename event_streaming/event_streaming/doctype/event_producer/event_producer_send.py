@@ -124,7 +124,8 @@ def send_to_node(event_producer, event_consumer):
         event_consumer_doc.set_last_update(update.creation)
 
     return last_update
-
+def pull_producer_x(update, event_producer, in_retry ):
+	pull_producer_data(json.dumps(update), event_producer, in_retry=True)
 @frappe.whitelist()
 def notify_event_consumers( doctype= None ):
 
@@ -257,7 +258,7 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
     if isinstance(doctypes, str):
         doctypes = frappe.parse_json(doctypes)
 
-    from event_streaming.event_streaming.doctype.event_consumer.event_consumer import has_consumer_access
+    from event_streaming.event_streaming_m.doctype.event_consumer.event_consumer import has_consumer_access
 
     consumer = frappe.get_doc("Event Consumer Z", event_consumer)
     docs = frappe.get_list(

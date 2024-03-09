@@ -5,7 +5,7 @@ import frappe
 from frappe.model import no_value_fields, table_fields
 from frappe.model.document import Document
 from frappe.utils.background_jobs import get_jobs
-from event_streaming.event_streaming.doctype.event_producer.event_producer_send import notify_event_consumers
+from event_streaming.event_streaming_m.doctype.event_producer.event_producer_send import notify_event_consumers
 
 class EventUpdateLog(Document):
 
@@ -26,8 +26,8 @@ class EventUpdateLog(Document):
 @frappe.whitelist()
 def notify_consumers_z(doc, event):
 	
-	if doc.doctype != "Sales Invoice":
-		return
+	return 
+		
 	
 	"""called via hooks"""
 
@@ -37,8 +37,8 @@ def notify_consumers_z(doc, event):
 	
 
 	consumers = check_doctype_has_consumers(doc.doctype)
-	if consumers or doc.doctype == 'Sales Invoice':
-		pass
+	if not consumers:
+		return
 	if consumers and doc.from_sync == 0 :				
 	
 		if event == "after_insert":
@@ -323,7 +323,7 @@ def get_update_logs_for_consumer(event_consumer, doctypes, last_update):
 	if isinstance(doctypes, str):
 		doctypes = frappe.parse_json(doctypes)
 
-	from event_streaming.event_streaming.doctype.event_consumer.event_consumer import has_consumer_access
+	from event_streaming.event_streaming_m.doctype.event_consumer.event_consumer import has_consumer_access
 	
 
 	consumer = frappe.get_doc("Event Consumer", event_consumer)

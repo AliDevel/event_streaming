@@ -14,7 +14,7 @@ from frappe.model.document import Document
 from frappe.utils.background_jobs import get_jobs
 from frappe.utils.data import get_link_to_form, get_url
 from frappe.utils.password import get_decrypted_password
-
+from event_streaming.event_streaming_m.doctype.event_producer.event_producer_send import pull_producer_x
 
 class EventProducer(Document):
 	def before_insert(self):
@@ -205,7 +205,6 @@ class EventProducer(Document):
 		frappe.throw(_("Failed to connect to the Event Producer site. Retry after some time."))
 
 
-
 @frappe.whitelist()
 def register_consumer(data):
 	"""create an event consumer document for registering a consumer"""
@@ -352,15 +351,39 @@ def sync(update, producer_site, event_producer, in_retry=False):
 
 	event_producer.set_last_update(update.creation)
 	frappe.db.commit()
+def re_sync(update, producer_site, event_producer, in_retry=False):
+	if isinstance(update, str):
+		update = json.loads(update)
+		frappe.log_error(frappe.get_traceback(), frappe.parse_json(update))
+	"""Sync the individual update"""
+	update = frappe._dict(json.dumps(update))
+	try:
+		if update.update_type == "Create":
+			set_insert(update, producer_site, event_producer.name)
+		if update.update_type == "Update":
+			set_update(update, producer_site)
+		if update.update_type == "Delete":
+			set_delete(update)
+		if in_retry:
+			return "Synced"
+		log_event_sync(update, event_producer.name, "Synced")
 
+	except Exception:
+		
+		log_event_sync(update, event_producer.name, "Failed", frappe.get_traceback())
+		return "Failed"
+
+	event_producer.set_last_update(update.creation)
+	frappe.db.commit()
 
 def set_insert(update, producer_site, event_producer):
 	"""Sync insert type update"""
 	if frappe.db.get_value(update.ref_doctype, update.docname):
 		# doc already created
 		return
+	
 	doc = frappe.get_doc(update.data)
-
+	
 	if update.mapping:
 		if update.get("dependencies"):
 			dependencies_created = sync_mapped_dependencies(update.dependencies, producer_site)
@@ -552,9 +575,11 @@ def new_event_notification(producer_url):
 def resync(update):
 	"""Retry syncing update if failed"""
 	update = frappe._dict(json.loads(update))
+
+
 	producer_site = get_producer_site(update.event_producer)
 	event_producer = frappe.get_doc("Event Producer", update.event_producer)
 	if update.mapping:
 		update = get_mapped_update(update, producer_site)
 		update.data = json.loads(update.data)
-	return sync(update, producer_site, event_producer, in_retry=True)
+	return pull_producer_x(json.dumps(update), event_producer, in_retry=True)
